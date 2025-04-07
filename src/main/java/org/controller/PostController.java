@@ -1,44 +1,55 @@
 package org.controller;
 
 import com.google.gson.Gson;
+import org.exception.NotFoundException;
 import org.model.Post;
-import org.repository.PostRepository;
 import org.service.PostService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
 
 public class PostController {
     public static final String APPLICATION_JSON = "application/json";
     private final PostService service;
-    private final PostRepository repository;
+    private final Gson gson = new Gson();
 
-    public PostController(PostService service, PostRepository repository) {
+    public PostController(PostService service) {
         this.service = service;
-        this.repository = repository;
     }
 
     public void all(HttpServletResponse response) throws IOException {
         response.setContentType(APPLICATION_JSON);
-        final var data = service.all();
-        final var gson = new Gson();
+        List<Post> data = service.all();
         response.getWriter().print(gson.toJson(data));
     }
 
-    public void getById(long id, HttpServletResponse response) {
-        // TODO: deserialize request & serialize response
+    public void getById(long id, HttpServletResponse response) throws IOException {
+        response.setContentType(APPLICATION_JSON);
+        try {
+            Post post = service.getById(id);
+            response.getWriter().print(gson.toJson(post));
+        } catch (NotFoundException e) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.getWriter().print("{\"Post not found\"}");
+        }
     }
 
     public void save(Reader body, HttpServletResponse response) throws IOException {
         response.setContentType(APPLICATION_JSON);
-        final Gson gson = new Gson();
-        final var post = gson.fromJson(body, Post.class);
-        final var data = service.save(post);
-        response.getWriter().print(gson.toJson(data));
+        Post post = gson.fromJson(body, Post.class);
+        Post savedPost = service.save(post);
+        response.getWriter().print(gson.toJson(savedPost));
     }
 
-    public void removeById(long id, HttpServletResponse response) {
-        // TODO: deserialize request & serialize response
+    public void removeById(long id, HttpServletResponse response) throws IOException {
+        try {
+            service.removeById(id);
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        } catch (NotFoundException e) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.getWriter().print("{\"Post not found\"}");
+        }
     }
 }

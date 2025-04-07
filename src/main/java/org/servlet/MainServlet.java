@@ -14,22 +14,22 @@ public class MainServlet extends HttpServlet {
 
     @Override
     public void init() {
-        final PostRepository repository = new PostRepository();
-        final PostService service = new PostService(repository);
-        controller = new PostController(service, repository);
+        PostRepository repository = new PostRepository();
+        PostService service = new PostService(repository);
+        controller = new PostController(service);
     }
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) {
         // если деплоились в root context, то достаточно этого
         try {
-            final var path = req.getRequestURI();
-            final var method = req.getMethod();
+            String path = req.getRequestURI();
+            String method = req.getMethod();
 
             if (path.equals("/api/posts")) {
                 handlePosts(method, req, resp);
             } else if (path.matches("/api/posts/\\d+")) {
-                final long id = Long.parseLong(path.substring(path.lastIndexOf("/")).replace("/", ""));
+                long id = Long.parseLong(path.substring(path.lastIndexOf("/")).replace("/", ""));
                 handlePostById(method, id, req, resp);
             } else {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
