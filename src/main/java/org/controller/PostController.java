@@ -1,11 +1,11 @@
 package org.controller;
 
 import com.google.gson.Gson;
+import jakarta.servlet.http.HttpServletResponse;
 import org.exception.NotFoundException;
 import org.model.Post;
 import org.service.PostService;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
@@ -39,9 +39,9 @@ public class PostController {
     public void save(Reader body, HttpServletResponse response) throws IOException {
         response.setContentType(APPLICATION_JSON);
         try {
-        Post post = gson.fromJson(body, Post.class);
-        Post savedPost = service.save(post);
-        response.getWriter().print(gson.toJson(savedPost));
+            Post post = gson.fromJson(body, Post.class);
+            Post savedPost = service.save(post);
+            response.getWriter().print(gson.toJson(savedPost));
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().print("\"Invalid JSON input\"}");
