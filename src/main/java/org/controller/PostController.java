@@ -38,9 +38,14 @@ public class PostController {
 
     public void save(Reader body, HttpServletResponse response) throws IOException {
         response.setContentType(APPLICATION_JSON);
+        try {
         Post post = gson.fromJson(body, Post.class);
         Post savedPost = service.save(post);
         response.getWriter().print(gson.toJson(savedPost));
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().print("\"Invalid JSON input\"}");
+        }
     }
 
     public void removeById(long id, HttpServletResponse response) throws IOException {
