@@ -1,22 +1,22 @@
 package org.servlet;
 
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import org.config.AppConfig;
 import org.controller.PostController;
-import org.repository.PostRepository;
-import org.service.PostService;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class MainServlet extends HttpServlet {
     private PostController controller;
+    private AnnotationConfigApplicationContext context;
 
     @Override
     public void init() {
-        PostRepository repository = new PostRepository();
-        PostService service = new PostService(repository);
-        controller = new PostController(service);
+        context = new AnnotationConfigApplicationContext(AppConfig.class);
+        controller = context.getBean(PostController.class);
     }
 
     @Override
@@ -35,6 +35,7 @@ public class MainServlet extends HttpServlet {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println(e.getMessage());
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
@@ -48,7 +49,7 @@ public class MainServlet extends HttpServlet {
         }
     }
 
-    private void handlePostById(String method, long id, HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    private void handlePostById(String method, long id, HttpServletRequest req, HttpServletResponse resp) throws IOException {
         switch (method) {
             case "GET" -> controller.getById(id, resp);
             case "DELETE" -> controller.removeById(id, resp);
