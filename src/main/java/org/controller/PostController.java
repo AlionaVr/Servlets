@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("/api/posts")
 public class PostController {
     private final PostService service;
 
@@ -22,7 +22,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public Post getById(@PathVariable long id) {
+    public Post getById(@PathVariable("id") long id) {
         return service.getById(id);
     }
 
@@ -32,7 +32,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
-    public void removeById(@PathVariable long id) {
+    public void removeById(@PathVariable("id") long id) {
         service.removeById(id);
     }
 }
