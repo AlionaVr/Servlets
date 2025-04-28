@@ -23,6 +23,7 @@ public class PostRepository {
             return Collections.emptyList();
         }
         return posts.values().stream()
+                .filter(post -> !post.isRemoved())
                 .map(Post::new)
                 .collect(Collectors.toList());
     }
@@ -32,25 +33,26 @@ public class PostRepository {
         if (posts.isEmpty()) {
             throw new NotFoundException();
         } else
-            return posts.values().stream()
-                    .filter(post -> post.getId() == id)
-                    .findFirst();
+            return Optional.ofNullable(posts.get(id))
+                    .filter(p -> !p.isRemoved());
     }
 
     public Post save(Post post) {
         if (post == null) {
             throw new IllegalArgumentException("Post cannot be null");
         }
+        // CREATE
         if (post.getId() == 0) {
             long newId = idCounter.incrementAndGet();
             Post newPost = new Post(post);
             newPost.setId(newId);
             posts.put(newId, newPost);
             return newPost;
-        } else {
-            if (!posts.containsKey(post.getId())) {
-                throw new NotFoundException();
-            }
+        }
+        // UPDATE
+        Post stored = posts.get(post.getId());
+        if (stored == null || stored.isRemoved()) {
+            throw new NotFoundException();
         }
         posts.put(post.getId(), new Post(post));
         return post;
@@ -58,9 +60,11 @@ public class PostRepository {
 
     public void removeById(long id) {
         checkId(id);
-        if (posts.remove(id) == null) {
+        Post stored = posts.get(id);
+        if (stored == null || stored.isRemoved()) {
             throw new NotFoundException();
         }
+        stored.setRemoved(true);
     }
 
     private void checkId(Long id) {
