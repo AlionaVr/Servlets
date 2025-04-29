@@ -1,21 +1,15 @@
-package org.model;
+package org.dto;
 
-public class Post {
+public class PostDTO {
     private long id;
     private String content;
-    private boolean removed;
 
-    public Post(Post post) {
-        this.id = post.id;
-        this.content = post.content;
-    }
-
-    public Post(long id, String content) {
+    public PostDTO(long id, String content) {
         this.id = id;
         this.content = content;
     }
 
-    public Post() {
+    public PostDTO() {
     }
 
     public long getId() {
@@ -34,11 +28,4 @@ public class Post {
         this.content = content;
     }
 
-    public boolean isRemoved() {
-        return removed;
-    }
-
-    public void setRemoved(boolean removed) {
-        this.removed = removed;
-    }
 }

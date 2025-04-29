@@ -20,6 +20,7 @@ public class Main {
         Context context = tomcat.addContext("", baseDir);
         tomcat.setPort(PORT);
         tomcat.getConnector();
+
         // Create the Spring application context
         AnnotationConfigWebApplicationContext appContext = new AnnotationConfigWebApplicationContext();
         appContext.register(AppConfig.class);
@@ -33,7 +34,6 @@ public class Main {
         tomcat.start();
         System.out.println("Tomcat started on port " + PORT);
 
-        // Keep the application running
         tomcat.getServer().await();
     }
 }
